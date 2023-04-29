@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<style>
+    #myContainer {
+        width: 400px;
+        height: 400px;
+        position: relative;
+        background: #00AA85;
+    }
+
+    #shuttle {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+    }
+
+    label {
+        display: block;
+        width: 100px;
+    }
+
+
+    body {
+        background-color: white;
+    }
+</style>
+
+<body>
+
+    <p>
+        <button onclick="myMove()">Click Me</button>
+        <button onclick="stop_func()">Stop Me</button>
+
+    </p>
+
+    <table>
+        <tr>
+            <td>
+                <div id="myContainer">
+                    <div><img id="shuttle" src="shuttle.png"></div>
+                </div>
+            </td>
+            <td>
+                <div align="center"><label>
+                        <font size="100" id="count">count</font>
+                    </label></div>
+            </td>
+        </tr>
+
+
+    </table>
+
+
+    <script>
+        var stop_func;
+        var count = 0;
+        var times = 50;
+        function myMove() {
+
+            var elem = document.getElementById("shuttle");
+            var label = document.getElementById("count");
+            var id = setInterval(frame, 3500);
+            function frame() {
+                count++;
+                label.innerHTML = count;
+                if (count == times + 1) {
+                    alert("Wohoo"); clearInterval(id);
+                }
+                var px = 0;
+                var py = 0;
+                var r = getRandomInt(1, 4);
+                console.log(r);
+                if (r == 1) { px = 0; py = 0; }
+                //else if(r== 2) {px = 200-25; py = 0;}
+                else if (r == 2) { px = 400 - 50; py = 0; }
+                else if (r == 3) { px = 0; py = 400 - 50; }
+                //else if(r==5){ px = 200-25 ; py = 400-50;}
+                else if (r == 4) { px = 400 - 50; py = 400 - 50; }
+                //else if(r==7){ px =0 ; py = 200-25 ; }
+                //else if(r==8){ px = 400-50 ; py = 200-25 ; }
+                elem.style.top = py + 'px';
+                elem.style.left = px + 'px';
+
+            }
+            stop_func = function stop() {
+                clearInterval(id);
+
+            }
+        }
+
+
+
+        /**
+         * Returns a random number between min (inclusive) and max (exclusive)
+         */
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        /**
+         * Returns a random integer between min (inclusive) and max (inclusive)
+         * Using Math.round() will give you a non-uniform distribution!
+         */
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+
+    </script>
+
+</body>
+
+</html>
