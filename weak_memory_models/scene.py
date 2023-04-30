@@ -43,7 +43,7 @@ processors_group = Group(proc1_a, proc2_a, proc3_a).scale(0.5).arrange_in_grid(r
 
 #Initialize bus
 bus_o = Bus()
-bus_a = Table([[]], row_labels=[Text("Bus")], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
+bus_a = Table([[""]], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
 
 
 #Initialize memory
@@ -55,22 +55,30 @@ mem_a = Table([[key +": " +str(value) for key, value in contents_m.items()]], in
 
 class WeakMemoryModels(Scene):
 
-    # # class head:
-    # def move_left(self):
-    #     headObj.move_left()
-    #     head = headObj.get_head()
-    #     pos = head.location
-    #     cell = tape.get_cell(pos)
-    #     arrow = head.arrow
-    #     self.play(arrow.animate.next_to(cell,UP))
+    # class head:
+    def update_memory(self, location, value):
+        global mem_a
+        mem_o.write(location, value)
+        mem_a_new = Table([[key +": " +str(value) for key, value in mem_o.get_contents().items()]], include_outer_lines=True).next_to(bus_a, DOWN).scale(0.5)
+        self.play(Transform(mem_a,mem_a_new))
+        self.remove(mem_a)
+        self.add(mem_a_new)
+        mem_a  = mem_a_new
 
-    # def move_right(self):
-    #     headObj.move_right()
-    #     head = headObj.get_head()
-    #     pos = head.location
-    #     cell = tape.get_cell(pos)
-    #     arrow = head.arrow
-    #     self.play(arrow.animate.next_to(cell,UP))
+    def put_in_bus(self, value):
+        global bus_a
+        bus_o.put_in_bus(value)
+        bus_a_new = Table([[value]], row_labels=[Text("Bus")], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
+        self.play(Transform(bus_a, bus_a_new))
+        self.remove(bus_a)
+        self.add(bus_a_new)
+        bus_a  = bus_a_new
+        # headObj.move_right()
+        # head = headObj.get_head()
+        # pos = head.location
+        # cell = tape.get_cell(pos)
+        # arrow = head.arrow
+        # self.play(arrow.animate.next_to(cell,UP))
 
     # def write_to_tape(self, alpha):
     #     global tape
@@ -97,6 +105,10 @@ class WeakMemoryModels(Scene):
 
 
         self.add(processors_group, bus_a, mem_a)
+        self.update_memory('x', 17)
+        self.update_memory('x', 10)
+        self.put_in_bus("read(x)")
+        self.put_in_bus("write(y)")
         # program = {
         #     "initial" :"q0",
         #     "final" : ["q3"],
