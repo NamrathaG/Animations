@@ -12,16 +12,19 @@ class Processor:
   def get_proc(self):
       return self
 
-  def issue_instruction(self):
-      i = instructions[pc]
-      put_in_bus(i)
-      self.pc = self.pc + 1
+#   def issue_instruction(self):
+#       i = instructions[pc]
+#       put_in_bus(i)
+#       self.pc = self.pc + 1
   
   def create_program_list(self):
     program_list = []
     for i in self.instructions:
         if i[0] == 'r':
-            program_list.append(["read(" + i[1]+")"])
+            if i[2] == None:
+               program_list.append(["read(" + i[1]+")"])
+            else:
+               program_list.append(["read(" + i[1]+ ", " + str(i[2])+")"])
         elif i[0] == 'w':
             program_list.append(["write(" + i[1]+ ", " + str(i[2])+")"])
     return (program_list)

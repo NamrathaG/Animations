@@ -6,8 +6,8 @@ class Shapes(Scene):
         square = Square()
         triangle = Triangle()
 
-        self.play(ApplyMethod(circle.shift, LEFT) )
-        self.play(ApplyMethod(circle.shift, RIGHT) )
-        self.play(ApplyMethod(circle.shift, RIGHT) )
-        self.play(ApplyMethod(circle.shift, LEFT) )
+        self.play(ApplyMethod(circle.shift, LEFT))
+        self.play(ApplyMethod(circle.shift, RIGHT))
+        self.play(ApplyMethod(circle.shift, RIGHT))
+        self.play(ApplyMethod(circle.shift, LEFT))
         self.wait(1)

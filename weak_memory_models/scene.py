@@ -22,28 +22,28 @@ TODO
 
 
 #Initialize processors
-proc1_o = Processor(pid = 1, instructions= [('r','x', None, None), ('w', 'x', 2, None), ('r', 'y', None, None)])
+proc1_o = Processor(pid = 1, instructions= [('r','x', None), ('w', 'x', 2), ('r', 'y', None)])
 proc1_a = Table(proc1_o.create_program_list(),col_labels=[Text("P1")])
-proc1_a.add(SurroundingRectangle(proc1_a.get_rows()[1]))
+# proc1_a.add(SurroundingRectangle(proc1_a.get_rows()[1]))
 proc1_a.get_horizontal_lines().set_color(BLACK)
 
 
-proc2_o = Processor(pid = 1, instructions= [('r','y', None, None), ('w', 'x', 6, None), ('w', 'y', 3, None)])
+proc2_o = Processor(pid = 1, instructions= [('r','y', None), ('w', 'x', 6), ('w', 'y', 3)])
 proc2_a = Table(proc2_o.create_program_list(),col_labels=[Text("P2")])
-proc2_a.add(SurroundingRectangle(proc2_a.get_rows()[1]))
+# proc2_a.add(SurroundingRectangle(proc2_a.get_rows()[1]))
 proc2_a.get_horizontal_lines().set_color(BLACK)
 
 
-proc3_o = Processor(pid = 1, instructions= [('r','y', None, None), ('w', 'x', 6, None), ('w', 'y', 3, None)])
+proc3_o = Processor(pid = 1, instructions= [('r','y', None), ('w', 'x', 6), ('w', 'y', 3)])
 proc3_a = Table(proc3_o.create_program_list(),col_labels=[Text("P2")])
-proc3_a.add(SurroundingRectangle(proc3_a.get_rows()[1]))
+# proc3_a.add(SurroundingRectangle(proc3_a.get_rows()[1]))
 proc3_a.get_horizontal_lines().set_color(BLACK)
 
 processors_group = Group(proc1_a, proc2_a, proc3_a).scale(0.5).arrange_in_grid(rows=1, buff=1).move_to([0,2,0])
 
 #Initialize bus
 bus_o = Bus()
-bus_a = Table([[""]], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
+bus_a = Table([["None"]], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
 
 
 #Initialize memory
@@ -65,10 +65,15 @@ class WeakMemoryModels(Scene):
         self.add(mem_a_new)
         mem_a  = mem_a_new
 
-    def put_in_bus(self, value):
+    def put_in_bus(self, value, from_component):
         global bus_a
+        t1 = Text(value).scale(0.5)
+        l1 = Line(from_component, bus_a.get_top() )
+        self.add(t1)
+        self.play(MoveAlongPath(t1, l1), rate_func=linear)
+        self.remove(t1)
         bus_o.put_in_bus(value)
-        bus_a_new = Table([[value]], row_labels=[Text("Bus")], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
+        bus_a_new = Table([[value]], include_outer_lines=True).next_to(processors_group, DOWN).scale(0.5)
         self.play(Transform(bus_a, bus_a_new))
         self.remove(bus_a)
         self.add(bus_a_new)
@@ -80,21 +85,39 @@ class WeakMemoryModels(Scene):
         # arrow = head.arrow
         # self.play(arrow.animate.next_to(cell,UP))
 
-    # def write_to_tape(self, alpha):
-    #     global tape
-    #     global tapeList
-    #     curr_head_pos = headObj.location
-    #     print(curr_head_pos)
-    #     tapeList[curr_head_pos[1]-1] = alpha
-    #     print(tapeList)
-    #     tape2 = Table([tapeList], include_outer_lines=True)
-    #     tape2.get_vertical_lines()[0].set_color(BLACK)
-    #     tape2.get_vertical_lines()[1].set_color(BLACK)
-    #     self.play(Transform(tape,tape2))
-    #     self.remove(tape)
-    #     self.add(tape2)
-    #     tape = tape2
+    def write_to_memory(self, location, value, from_component):
+        global mem_a
+        t1 = Text("write("+location+","+ str(value)+")").scale(0.5)
+        l1 = Line(from_component, mem_a.get_top() )
+        self.add(t1)
+        self.play(MoveAlongPath(t1, l1), rate_func=linear)
+        self.remove(t1)
+        mem_o.write(location, value)
+        mem_a_new = Table([[key +": " +str(value) for key, value in mem_o.get_contents().items()]], include_outer_lines=True).next_to(bus_a, DOWN).scale(0.5)
+        self.play(Transform(mem_a,mem_a_new))
+        self.remove(mem_a)
+        self.add(mem_a_new)
+        mem_a  = mem_a_new
 
+    def read_from_memory(self, location, value, line_no):
+        global proc1_a
+        global processors_group
+        t1 = Text(str(value)).scale(0.5)
+        l1 = Line( mem_a.get_top(), proc1_a.get_center())
+        self.add(t1)
+        self.play(MoveAlongPath(t1, l1), rate_func=linear)
+        self.remove(t1)
+        proc1_o.instructions[line_no] = ('r', location, value)
+        proc1_a_new = Table(proc1_o.create_program_list(),col_labels=[Text("P1")]).scale(0.5)
+        proc1_a_new.get_horizontal_lines().set_color(BLACK)
+        processors_group_new = Group(proc1_a_new, proc2_a, proc3_a).arrange_in_grid(rows=1, buff=1).move_to([0,2,0])
+        # proc1_a.add(SurroundingRectangle(proc1_a.get_rows()[1]))
+       
+        self.play(Transform(processors_group, processors_group_new))
+        self.remove(processors_group)
+        self.add(processors_group_new)
+        proc1_a = proc1_a_new
+        processors_group = processors_group_new
     # def tell_me_what_to_do(self, program, state, curr_alpha):
     #     return program["delta"][state][curr_alpha]
 
@@ -104,11 +127,14 @@ class WeakMemoryModels(Scene):
         
 
 
-        self.add(processors_group, bus_a, mem_a)
-        self.update_memory('x', 17)
-        self.update_memory('x', 10)
-        self.put_in_bus("read(x)")
-        self.put_in_bus("write(y)")
+        self.add(processors_group,  mem_a)
+        # self.update_memory('x', 17)
+        # self.update_memory('x', 10)
+        self.write_to_memory('x', 5, proc1_a.get_center())
+        self.write_to_memory('y', 5, proc2_a.get_center())
+        self.read_from_memory('x', 5, 0)
+        # self.put_in_bus("read(x)", proc1_a.get_center())
+        # self.put_in_bus("write(y)", proc2_a.get_center())
         # program = {
         #     "initial" :"q0",
         #     "final" : ["q3"],
