@@ -13,17 +13,19 @@ class TableExplore(Scene):
 
     def construct(self):
       
-        tape_list = ["x", "y", "y", "z"]
-        tape = Table([tape_list], include_outer_lines=True)
-        self.add(tape)
-        # tape_list2 = ["x", "x", "y", "z"]
-        # tape2 = Table([tape_list2], include_outer_lines=True)
-        cell = tape.get_cell((1,1))
-        ent = tape.get_entries((1,1)).lines_text.original_text
-        # arrow = Arrow(start=UP, end=DOWN, color=GOLD)
-        # self.play(tape.animate.set_value([["a","b","c","d"]]))
-        pprint(vars(ent))
-        # self.play(arrow.animate.next_to(tape.get_cell((1,3)),UP))
+
+        # # Example 1
+        # tape_list = ["x", "y", "y", "z"]
+        # tape = Table([tape_list], include_outer_lines=True)
+        # self.add(tape)
+        # # tape_list2 = ["x", "x", "y", "z"]
+        # # tape2 = Table([tape_list2], include_outer_lines=True)
+        # cell = tape.get_cell((1,1))
+        # ent = tape.get_entries((1,1)).lines_text.original_text
+        # # arrow = Arrow(start=UP, end=DOWN, color=GOLD)
+        # # self.play(tape.animate.set_value([["a","b","c","d"]]))
+        # pprint(vars(ent))
+        # # self.play(arrow.animate.next_to(tape.get_cell((1,3)),UP))
 
 
         # self.play(Transform(tape, tape2))
@@ -70,7 +72,30 @@ class TableExplore(Scene):
         #     print(row)
                 
     
+        # Example 2 for Memory
+        # inputDictionary = {'x': 10, 'y': 20, 'z': 30}
+        # resultList = [key +": " +str(value) for key, value in inputDictionary.items()]
+     
+        # tape = Table([resultList], include_outer_lines=True)
+        # self.add(tape)
+       
+
+        # Example 3 for program
+        # table = Table(
+        #     [["read(x)"], ["write(x,3)"], ["read(y)"], ["write(y,2)"]],col_labels=[Text("P1")])
+        # table.add(SurroundingRectangle(table.get_rows()[1]))
+        # table.get_horizontal_lines().set_color(BLACK)
+        # self.add(table)
         
+        # Example 3 for Bus
+        # table = Table(
+        #     [["read(x)"]],row_labels=[Text("Bus")], include_outer_lines=True)
+        # # table.add(SurroundingRectangle(table.get_rows()[1]))
+        # # table.get_horizontal_lines().set_color(BLACK)
+        # self.add(table)
+        
+
+
         
         
     
