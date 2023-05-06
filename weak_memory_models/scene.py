@@ -52,6 +52,19 @@ mem_o = Memory(contents_m)
 mem_a = Table([[key +": " +str(value) for key, value in contents_m.items()]], include_outer_lines=True).next_to(bus_a, DOWN).scale(0.5)
 
 
+theta_tracker = ValueTracker(0)
+        # line1 = Line(LEFT, RIGHT)
+line_moving = Arrow(start=mem_a.get_top(), end=proc2_a.get_bottom(), color=YELLOW)
+line_ref = line_moving.copy()
+
+line_moving.add_updater(
+            lambda x: x.become(line_ref.copy()).rotate(
+                theta_tracker.get_value() * DEGREES, about_point=mem_a.get_top()
+            )
+        )
+
+#  self.play(theta_tracker.animate.set_value(40))
+#         self.play(theta_tracker.animate.set_value(140))
 
 class WeakMemoryModels(Scene):
 
@@ -104,6 +117,7 @@ class WeakMemoryModels(Scene):
         global processors_group
         t1 = Text(str(value)).scale(0.5)
         l1 = Line( mem_a.get_top(), proc1_a.get_center())
+        self.play(theta_tracker.animate.set_value(45))
         self.add(t1)
         self.play(MoveAlongPath(t1, l1), rate_func=linear)
         self.remove(t1)
@@ -127,7 +141,7 @@ class WeakMemoryModels(Scene):
         
 
 
-        self.add(processors_group,  mem_a)
+        self.add(processors_group,  mem_a, line_moving)
         # self.update_memory('x', 17)
         # self.update_memory('x', 10)
         self.write_to_memory('x', 5, proc1_a.get_center())
